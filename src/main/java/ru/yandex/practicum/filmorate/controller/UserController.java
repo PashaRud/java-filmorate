@@ -21,7 +21,6 @@ public class UserController {
 
     @GetMapping
     public Collection<User> findAll() {
-        log.info("Текущее количество юзеров: " + users.size());
         return users.values();
     }
 
@@ -35,12 +34,12 @@ public class UserController {
             log.error("некорректная дата рождения - " + user.getBirthday());
             throw new ValidationException("дата рождения не может быть в будущем");
         } else if (user.getName().isEmpty()) {
-            log.info("Имя не указано -> имя соответствует логину " + user.getLogin());
+            log.debug("Имя не указано -> имя соответствует логину " + user.getLogin());
             user.setName(user.getLogin());
         }
         user.setId(++id);
         users.put(user.getId(), user);
-        log.debug("юзер создан " + user.toString());
+        log.info("юзер создан " + user.toString());
         return user;
     }
 
