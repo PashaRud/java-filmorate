@@ -1,56 +1,82 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.WrongParameterException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.filmService.FilmService;
+import ru.yandex.practicum.filmorate.service.userService.UserService;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.*;
 
-@RestController
 @Slf4j
+@RestController
 @RequestMapping("/films")
-public class FilmController  {
+public class FilmController {
 
-    private final LocalDate FIRST_MOVIE = LocalDate.of(1895, 12, 28);
-    private int id = 0;
-    private final Map<Integer, Film> films = new HashMap<>();
+    FilmService filmService;
+    UserService userService;
+    @Autowired
+    public FilmController(FilmService filmService, UserService userService) {
+        this.filmService = filmService;
+        this.userService = userService;
+    }
 
     @GetMapping
     public Collection<Film> findAll() {
-        return films.values();
+        log.info("Текущее количество фильмов: ", + filmService.findAll().size());
+        return filmService.findAll();
     }
 
     @PostMapping
-    public Film create(@Valid @RequestBody Film film) throws ValidationException {
-
-        if (film.getReleaseDate().isBefore(FIRST_MOVIE)) {
-            log.error("некорректная дата выхода фильма - " + film.getReleaseDate());
-            throw new ValidationException("Некорректная дата выхода кино. Первое кино было выпущено 28.12.1895");
-        } else {
-            film.setId(++id);
-            films.put(film.getId(), film);
-            log.info("Фильм создан " + film.toString());
-            return film;
-        }
+    public @Valid Film create(@Valid @RequestBody Film film) throws WrongParameterException, ValidationException {
+        log.info("Добавлен фильм: " + film);
+        return filmService.create(film);
     }
 
     @PutMapping
-    public Film update(@Valid @RequestBody Film film) throws ValidationException {
-            if (films.containsKey(film.getId())) {
-                if (film.getReleaseDate().isBefore(FIRST_MOVIE)) {
-                    log.error("некорректная дата выхода фильма - " + film.getReleaseDate());
-                    throw new ValidationException("Некорректная дата выхода кино. Первое кино было выпущено 28.12.1895");
-                } else {
-                    films.put(film.getId(), film);
-                    log.info("фильм обновлен " + film.toString());
-                }
-            } else {
-                log.error("фильма в списке для обновления не существует - " + film.toString());
-                throw new ValidationException("Невозможно обновить фильм. Такого фильма в списке не существует.");
-            }
-        return film;
+    public @Valid Film update(@Valid @RequestBody Film film) throws WrongParameterException, ValidationException {
+        log.info("Обновлен фильм: " + film);
+        return filmService.update(film);
+    }
+
+    @DeleteMapping
+    public @Valid void delete(@Valid @RequestBody Film film) throws WrongParameterException {
+        log.info("Фильм удален: " + film);
+        filmService.DeleteFilm(film);
+    }
+
+    @GetMapping("{id}")
+    public Film getFilmById(@PathVariable Integer id) throws WrongParameterException, ValidationException {
+        log.info("Найден фильм по id: " + filmService.findFilmById(id));
+        return filmService.findFilmById(id);
+    }
+
+    @PutMapping("{id}/like/{userId}")
+    public void addLike(@PathVariable Integer id,
+                        @PathVariable Integer userId) throws ValidationException {
+        log.info("Фильму с id " + id + " поставлен лайк пользователем с id " + userId);
+        filmService.addLike(filmService.findFilmById(id), userService.findUserById(userId));
+    }
+
+    @DeleteMapping("{id}/like/{userId}")
+    public void deleteLike(@PathVariable Integer id,
+                           @PathVariable Integer userId) throws ValidationException {
+        log.info("Фильму с id " + id + " удален лайк пользователем с id " + userId);
+        filmService.deleteLike(filmService.findFilmById(id), userService.findUserById(userId));
+    }
+
+    @GetMapping("/popular")
+    public Collection<Film> getMostPopularFilms(
+            @RequestParam(defaultValue = "10",required = false) Integer count) {
+        log.info("Список наиболее полпулярных фильмов в количестве " + count);
+        return filmService.getPopularFilms(count);
+
     }
 }
