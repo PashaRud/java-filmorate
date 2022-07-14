@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service.userService;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -10,7 +9,6 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.*;
 
-@Slf4j
 @Service
 public class UserService {
     UserStorage userStorage;

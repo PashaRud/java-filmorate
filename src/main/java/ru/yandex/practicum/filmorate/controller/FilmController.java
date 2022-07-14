@@ -6,13 +6,10 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.WrongParameterException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.filmService.FilmService;
 import ru.yandex.practicum.filmorate.service.userService.UserService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
@@ -49,7 +46,7 @@ public class FilmController {
     @DeleteMapping
     public @Valid void delete(@Valid @RequestBody Film film) throws WrongParameterException {
         log.info("Фильм удален: " + film);
-        filmService.DeleteFilm(film);
+        filmService.deleteFilm(film);
     }
 
     @GetMapping("{id}")
