@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.WrongParameterException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.filmService.FilmService;
-import ru.yandex.practicum.filmorate.service.userService.UserService;
 
 import javax.validation.Valid;
 import java.util.*;
@@ -18,11 +17,9 @@ import java.util.*;
 public class FilmController {
 
     FilmService filmService;
-    UserService userService;
     @Autowired
-    public FilmController(FilmService filmService, UserService userService) {
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
-        this.userService = userService;
     }
 
     @GetMapping
@@ -50,30 +47,29 @@ public class FilmController {
     }
 
     @GetMapping("{id}")
-    public Film getFilmById(@PathVariable Integer id) throws WrongParameterException, ValidationException {
+    public Film getFilmById(@PathVariable Integer id) throws WrongParameterException {
         log.info("Найден фильм по id: " + filmService.findFilmById(id));
         return filmService.findFilmById(id);
     }
 
     @PutMapping("{id}/like/{userId}")
     public void addLike(@PathVariable Integer id,
-                        @PathVariable Integer userId) throws ValidationException {
+                        @PathVariable Integer userId) {
         log.info("Фильму с id " + id + " поставлен лайк пользователем с id " + userId);
-        filmService.addLike(filmService.findFilmById(id), userService.findUserById(userId));
+        filmService.addLike(id, userId);
     }
 
     @DeleteMapping("{id}/like/{userId}")
     public void deleteLike(@PathVariable Integer id,
-                           @PathVariable Integer userId) throws ValidationException {
+                           @PathVariable Integer userId) {
         log.info("Фильму с id " + id + " удален лайк пользователем с id " + userId);
-        filmService.deleteLike(filmService.findFilmById(id), userService.findUserById(userId));
+        filmService.deleteLike(id, userId);
     }
 
     @GetMapping("/popular")
     public Collection<Film> getMostPopularFilms(
-            @RequestParam(defaultValue = "10",required = false) Integer count) {
-        log.info("Список наиболее полпулярных фильмов в количестве " + count);
+            @RequestParam(defaultValue = "10") Integer count) {
+        log.info("Список наиболее популярных фильмов в количестве " + count);
         return filmService.getPopularFilms(count);
-
     }
 }

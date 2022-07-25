@@ -2,17 +2,18 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import ru.yandex.practicum.filmorate.transfers.Genre;
+import ru.yandex.practicum.filmorate.transfers.MPA;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Data
 public class Film {
     private Set<Integer> likes;
+    private Set<Genre> genre;
     private int id;
     @NotNull(message = "Название должно быть не пустым")
     @NotBlank(message = "Название должно быть не пустым")
@@ -26,6 +27,12 @@ public class Film {
     private LocalDate releaseDate;
     @Min(1)
     private long duration;
+
+    @NotNull(message = "Укажите возростной рейтинг фильма")
+    private MPA mpa;
+
+
+    //Добавить инициализацию полей MPA и GENRE
     public Film(int id, String name, String description, LocalDate releaseDate, long duration) {
         this.id = id;
         this.name = name;
@@ -33,5 +40,6 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
         this.likes = new HashSet<>();
+        this.genre = new HashSet<>();
     }
 }
