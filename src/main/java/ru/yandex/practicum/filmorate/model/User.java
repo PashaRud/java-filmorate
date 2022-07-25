@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import javax.validation.constraints.*;
@@ -9,6 +10,7 @@ import java.util.*;
 @Data
 public class User {
     private Set<Integer> friends;
+    private Map<User, Boolean> friendsStatus;
     private int id;
     @NotNull(message = "не указан email")
     @NotBlank(message = "email не должен состоять из пробелов")
@@ -30,6 +32,7 @@ public class User {
         this.name = name;
         this.birthday = birthday;
         this.friends = new HashSet<>();
+        this.friendsStatus = new HashMap<>();
     }
 
 }

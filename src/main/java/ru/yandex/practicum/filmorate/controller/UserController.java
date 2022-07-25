@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.userService.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -59,29 +60,29 @@ public class UserController {
             @PathVariable Integer id,
             @PathVariable Integer friendId) {
         log.info("Пользователи с id " + id + " и с id " + friendId + " стали друзьями");
-        userService.addFriends(userService.findUserById(id), userService.findUserById(friendId));
+        userService.addFriends(id, friendId);
     }
 
     @DeleteMapping("{id}/friends/{friendId}")
     public void deleteFriends(
-            @PathVariable Integer id,
-            @PathVariable Integer friendId) {
+            @Positive @PathVariable Integer id,
+            @Positive @PathVariable Integer friendId) {
         log.info("Пользователи с id " + id + " и с id " + friendId + " больше не друзья");
-        userService.deleteFriends(userService.findUserById(id), userService.findUserById(friendId));
+        userService.deleteFriends(id, friendId);
     }
 
     @GetMapping("{id}/friends")
     public Collection<User> findAllFriends(
-            @PathVariable Integer id) {
+            @Positive @PathVariable Integer id) {
         log.info("Список друзей пользователя с id " + id);
-        return userService.findAllFriends(userService.findUserById(id));
+        return userService.findAllFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> commonFriends(@PathVariable Integer id,
-                                    @PathVariable Integer otherId) {
+    public List<User> commonFriends(@Positive @PathVariable Integer id,
+                                    @Positive @PathVariable Integer otherId) {
         log.info("Получен список общих друзей у пользователей с id " + id + " и " + otherId);
-        return userService.commonFriends(userService.findUserById(id),userService.findUserById(otherId));
+        return userService.commonFriends(id, otherId);
     }
 
 }
