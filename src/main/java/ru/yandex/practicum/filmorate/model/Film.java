@@ -1,9 +1,10 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import ru.yandex.practicum.filmorate.transfers.Genre;
-import ru.yandex.practicum.filmorate.transfers.MPA;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -11,10 +12,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class Film {
-    private Set<Integer> likes;
+    private final Set<Long> likes = new HashSet<>();
     private Set<Genre> genre;
-    private int id;
+    private Integer id;
     @NotNull(message = "Название должно быть не пустым")
     @NotBlank(message = "Название должно быть не пустым")
     private String name;
@@ -29,7 +33,7 @@ public class Film {
     private long duration;
 
     @NotNull(message = "Укажите возростной рейтинг фильма")
-    private MPA mpa;
+    private Mpa mpa;
 
 
     //Добавить инициализацию полей MPA и GENRE
@@ -39,7 +43,23 @@ public class Film {
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
-        this.likes = new HashSet<>();
+//        this.likes = new HashSet<>();
         this.genre = new HashSet<>();
+    }
+
+    public void addLike(Long userId) {
+        likes.add(userId);
+    }
+
+    public void removeLike(Integer userId) {
+        likes.remove(userId);
+    }
+
+    public int getLikesCount() {
+        return likes.size();
+    }
+
+    public Set<Long> getLikes() {
+        return new HashSet<>(likes);
     }
 }
