@@ -4,6 +4,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
@@ -14,6 +16,8 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.Validator;
 import ru.yandex.practicum.filmorate.storage.dao.FilmStorage;
 
+import java.sql.Date;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -83,6 +87,25 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 
+//    @Override
+//    public Film create(Film film) throws ValidationException {
+//        validator.filmValidator(film);
+//        KeyHolder keyHolder = new GeneratedKeyHolder();
+//        final String sql = "INSERT INTO FILMS(FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) " +
+//                "values (?, ?, ?, ?, ?)";
+//        jdbcTemplate.update(connection -> {
+//            PreparedStatement stmt = connection.prepareStatement(sql, new String[]{"film_id"});
+//            stmt.setString(1, film.getName());
+//            stmt.setString(2, film.getDescription());
+//            stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
+//            stmt.setLong(4, film.getDuration());
+//            stmt.setInt(5, film.getMpa().getId());
+//            return stmt;
+//        }, keyHolder);
+//        film.setId(keyHolder.getKey().intValue());
+//        return film;
+//    }
+
     @Override
     public Film update(Film film) {
         if(film.getId() <= 0) {
@@ -110,24 +133,6 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
-//    private void testId(Integer id) {
-//        if (id == null) {
-////            log.warn(MSG_ERR_ID + id);
-//            throw new WrongParameterException("Юзера с id " + id + " нет в БД.");
-//        }
-//        if (id < 0) {
-////            log.warn(MSG_ERR_NOT_FOUND + id);
-//            throw new WrongParameterException("Юзера с id " + id + " нет в БД.");
-//        }
-//        String sql = "SELECT * FROM FILMS WHERE FILM_ID = ?";
-//        Film film = jdbcTemplate.query(
-//                        sql,
-//                        this::mapToFilm,
-//                        id)
-//                .stream()
-//                .findAny()
-//                .orElseThrow(() -> new WrongParameterException("Фильма с id " + id + " нет в БД."));
-//    }
 
     @Override
     public void saveLikes(Film film) {

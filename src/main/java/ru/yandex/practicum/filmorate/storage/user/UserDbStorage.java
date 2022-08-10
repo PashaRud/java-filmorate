@@ -18,7 +18,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @Primary
@@ -56,14 +57,8 @@ public class UserDbStorage implements UserStorage {
         return result.get(0);
     }
 
-    public void loadFriends(User user) {
-        String sql = "(SELECT USER_ID2 ID FROM FRIENDSHIP  WHERE USER_ID1 = ?) " +
-                        "UNION " + "(SELECT USER_ID1 ID FROM FRIENDSHIP  WHERE USER_ID2 = ? AND  CONFIRMED = true)";
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql, user.getId(), user.getId());
-        while (sqlRowSet.next()) {
-            user.addFriend(sqlRowSet.getInt("id"));
-        }
-    }
+
+
 
     @Override
     public List<User> findAll() {
@@ -108,57 +103,26 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public List<Integer> getFriendsIds(Integer id) {
-        final String sql = "SELECT USER_ID2 FROM FRIENDSHIP WHERE USER_ID1 = ?";
-        List<Integer> friends_id = jdbcTemplate.query(sql, (rs, numRow) -> rs.getInt("USER_ID2"), id);
-        return friends_id;
+    public List<User> getFriendsId(Integer id) {
+        List<Integer> friendIds = jdbcTemplate.queryForList("SELECT friend_id FROM friendship WHERE user_id = ?",
+                Integer.class, id);
+        List<User> list = new ArrayList<>();
+        for (Integer friendId : friendIds) {
+            User userById = findById(friendId);
+            list.add(userById);
+        }
+        return list;
     }
 
     @Override
-    public void addFriend(Integer user_id, Integer friend_id) {
-        final String sql = "INSERT INTO FRIENDSHIP (USER_ID1, USER_ID2) VALUES (?, ?)";
-        jdbcTemplate.update(sql, user_id, friend_id);
+    public void addFriend(Integer id, Integer friendId) {
+        String sqlQuery = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?)";
+        jdbcTemplate.update(sqlQuery, id, friendId);
     }
 
     @Override
     public void deleteFriend(Integer user_id, Integer friend_id) {
-        final String sql = "DELETE FROM FRIENDSHIP WHERE USER_ID1 = ? AND USER_ID2 = ?";
+        final String sql = "DELETE FROM FRIENDSHIP WHERE USER_ID = ? AND friend_id = ?";
         jdbcTemplate.update(sql, user_id, friend_id);
     }
-
-//    @Override
-    public boolean containsEmail(String email) {
-        String sql = "SELECT * FROM USERS WHERE EMAIL = ?";
-        SqlRowSet filmRows = jdbcTemplate.queryForRowSet(sql, email);
-        return filmRows.next();
     }
-
-    //ДРУЖБА!!!!!!!!!!!!!!!!!!!!!!!
-
-//    @Override
-//    public boolean containsFriendship(Integer filterId1, Integer filterId2, Boolean filterConfirmed) {
-//        String sql = "SELECT * FROM FRIENDSHIP WHERE USER_ID1 = ? AND USER_ID2 = ? AND  CONFIRMED = ?";
-//        SqlRowSet rows = jdbcTemplate.queryForRowSet(sql, filterId1, filterId2, filterConfirmed);
-//        return rows.next();
-//    }
-//
-//    @Override
-//    public void updateFriendship(Integer id1, Integer id2, boolean confirmed,  Integer filterId1, Integer filterId2) {
-//        String sql =
-//                "UPDATE FRIENDSHIP SET USER_ID1 = ?, USER_ID2 = ?, CONFIRMED = ? " +
-//                        "WHERE USER_ID1 = ? AND USER_ID2 = ?";
-//        jdbcTemplate.update(sql, id1, id2, confirmed, filterId1, filterId2);
-//    }
-//
-//    @Override
-//    public void insertFriendship(Integer id, Integer friendId) {
-//        String sql = "INSERT INTO FRIENDSHIP (USER_ID1, USER_ID2, CONFIRMED) VALUES(?, ?, ?)";
-//        jdbcTemplate.update(sql, id, friendId, false);
-//    }
-//
-//    @Override
-//    public void removeFriendship(Integer filterId1, Integer filterId2) {
-//        String sql = "DELETE FROM FRIENDSHIP WHERE USER_ID1 = ? AND USER_ID2 = ?";
-//        jdbcTemplate.update(sql, filterId1, filterId2);
-//    }
-}

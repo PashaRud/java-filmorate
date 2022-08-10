@@ -10,6 +10,7 @@ import java.util.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
+@Builder
 public class User {
 
 //    private Map<User, Boolean> friendsStatus;
@@ -26,22 +27,6 @@ public class User {
     @NotNull(message = "Укажите дату рождения")
     @PastOrPresent(message = "Некорректная дата рождения.")
     private LocalDate birthday;
-    private final Set<Integer> friends = new HashSet<>();
-
-    public void addFriend(Integer id) {
-        friends.add(id);
-    }
-
-    public void removeFriend(Integer id) {
-        friends.remove(id);
-    }
-
-    public List<Integer> getFiends() {
-        return new ArrayList<>(friends);
-    }
-
-    public boolean containsFriend(Integer id){
-        return friends.contains(id);
-    }
+    private Set<Integer> friendship = new HashSet<>();
 
 }

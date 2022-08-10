@@ -20,19 +20,8 @@ public interface UserStorage {
 
 //    boolean containsEmail(String email);
 
-//    void loadFriends(User user);
-//
-//    boolean containsFriendship(Integer filterId1, Integer filterId2, Boolean filterConfirmed);
-//
-//    void updateFriendship(Integer id1, Integer id2, boolean confirmed,  Integer filterId1, Integer filterId2);
-//
-//    void insertFriendship(Integer id, Integer friendId);
-//
-//    void removeFriendship(Integer filterId1, Integer filterId2);
-
-    List<Integer> getFriendsIds(Integer id);
-
+    List<User> getFriendsId(Integer id);
     void addFriend(Integer user_id, Integer friend_id);
-
     void deleteFriend(Integer user_id, Integer friend_id);
+//    List<User> getAllUserFriends(Integer id);
 }

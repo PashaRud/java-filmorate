@@ -16,21 +16,21 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleWrongParameterException(final WrongParameterException e) {
-        log.debug("Неверное значение");
+        log.warn("404 {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage() + " Неверное значение");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
-        log.debug("Неверный запрос");
+        log.warn("400 {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage() + " Неверный запрос");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleRuntimeException(final RuntimeException e) {
-        log.debug("Runtime exception");
+        log.warn("500 {}", e.getMessage(), e);
         return new ErrorResponse(e.getMessage() + " Runtime exception");
     }
 }

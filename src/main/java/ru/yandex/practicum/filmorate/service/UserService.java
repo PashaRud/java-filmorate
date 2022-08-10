@@ -9,8 +9,11 @@ import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.dao.UserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
+import java.lang.invoke.WrongMethodTypeException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,181 +47,31 @@ public class UserService {
 
     public User findById(Integer id) {
         User user = userStorage.findById(id);
-        userStorage.loadFriends(user);
+//        userStorage.loadFriends(user);
         return user;
     }
 
-    //ДРУЗЬЯ!!!!!!!!!!!!!!!
-
-//    public void addFriend(Integer id, Integer friendId) {
-//        User user = userStorage.findById(id);
-//        User friend = userStorage.findById(friendId);
-//        if (user == null || friend == null) {
-//            String message = ("Пользователь не найден");
-//            log.debug(message);
-//            throw new RuntimeException(message);
-//        }
-//        if (user.containsFriend(friendId)) {
-//            log.warn("Друг существует");
-//            return;
-//        }
-//        user.addFriend(friendId);
-//        if (userStorage.containsFriendship(friendId, id, false)) {
-//            //friendId уже добавил ранее в друзья
-//            userStorage.updateFriendship(friendId, id, true, friendId, id);
-//        } else if (!userStorage.containsFriendship(id, friendId, null)){
-//            //Односторонняя связь, не было дружбы
-//            userStorage.insertFriendship(id, friendId);
-//        }
-//    }
-//
-//    public void deleteFriend(Integer id, Integer friendId) {
-//        User user = this.findById(id);
-//        User friend = this.findById(friendId);
-//        if (user == null || friend == null) {
-//            String message = ("Пользователь не найден");
-//            log.warn(message);
-//            throw  new RuntimeException(message);
-//        }
-//        if (!user.containsFriend(friendId)) {
-//            log.warn("Друг не существует");
-//            return;
-//        }
-//        user.removeFriend(friendId);
-//
-//        if (userStorage.containsFriendship(id, friendId, false)) {
-//            //Односторонняя связь. friendId не одобрял
-//            userStorage.removeFriendship(id, friendId);
-//        } else if (userStorage.containsFriendship(id, friendId, true)) {
-//            //Совместная связь
-//            userStorage.updateFriendship(friendId, id, false, id, friendId);
-//        } else if (userStorage.containsFriendship(friendId, id, true)) {
-//            //Совместная связь. friendId первый добавил
-//            userStorage.updateFriendship(friendId, id, false, friendId, id);
-//        }
-//    }
-//
-//    public List<User> getAllUserFriends(Integer userId) {
-////        @Valid User user = userStorage.getUserById(userId);
-//        if(userStorage.findById(userId) != null) {
-//            log.info("Запрос друзей пользователя id " + userId + ".");
-//            List<Integer> friendsId = new ArrayList<>(userStorage.findById(userId).getFriends());
-//            return friendsId.stream()
-//                    .map(id -> userStorage.findById(id))
-//                    .collect(Collectors.toList());
-//        }
-//        log.info("Запрос друзей несуществующего пользователя.");
-////        throw new NotFoundException(String.format("Пользователь {} не найден", userId));
-//        throw new WrongParameterException (String.format("Пользователь {} не найден", userId));
-//    }
-//
-//    public List<User> commonFriends(Integer userAId, Integer userBId) {
-//        return userStorage.findById(userAId).getFriends().stream()
-//                .filter(friendId -> userStorage.findById(userBId).getFriends().contains(friendId))
-//                .map(friendId -> userStorage.findById(friendId))
-//                .collect(Collectors.toList());
-//    }
-
-//    public void addFriend(Integer id, Integer friendId){
-//        if (userStorage.findById(id) != null && userStorage.findById(friendId)!= null){
-//            userStorage.addFriend(id, friendId);
-//            log.info("Пользователь " + id + " добавил в друзья id " + friendId + ".");
-//        } else {
-//            throw new WrongParameterException(String.format("Пользователь не найден"));
-//        }
-//    }
-
-        public void addFriend(Integer id, Integer friendId) {
-        User user = userStorage.findById(id);
-        User friend = userStorage.findById(friendId);
-        if (user == null || friend == null) {
-            String message = ("Пользователь не найден");
-            log.debug(message);
-            throw new WrongParameterException(message);
+    public void addFriend(Integer userId, Integer friendId){
+        if ((userStorage.findAll().stream().noneMatch(u -> Objects.equals(u.getId(), userId)))
+                || (userStorage.findAll().stream().noneMatch(u -> Objects.equals(u.getId(), friendId)))) {
+            throw new WrongParameterException("user.id или friend.id не найден");
         }
-        if (user.containsFriend(friendId)) {
-            log.warn("Друг существует");
-            return;
-        }
-        user.addFriend(friendId);
-//        if (userStorage.containsFriendship(friendId, id, false)) {
-//            //friendId уже добавил ранее в друзья
-//            userStorage.updateFriendship(friendId, id, true, friendId, id);
-//        } else if (!userStorage.containsFriendship(id, friendId, null)){
-//            //Односторонняя связь, не было дружбы
-//            userStorage.insertFriendship(id, friendId);
-//        }
+        userStorage.addFriend(userId, friendId);
     }
 
-    public void deleteFriend(Integer id, Integer friendId){
-        if (userStorage.findById(id) != null && userStorage.findById(friendId) != null){
-            userStorage.deleteFriend(id, friendId);
-            log.info("Пользователь " + id + " удалил из друзей id " + friendId + ".");
-        } else {
-            throw new WrongParameterException(String.format("Пользователь не найден"));
-        }
+    public void deleteFriend(Integer userId, Integer friendId){
+        userStorage.deleteFriend(userId, friendId);
     }
 
 
-//    public List<User> getAllUserFriends (Integer id){ //готово
-//        if(userStorage.findById(id) != null) {
-//            log.info("Запрос друзей пользователя id " + id + ".");
-//            return userStorage.getFriendsIds(id)
-//                    .stream()
-//                    .map(userStorage::findById)
-//                    .collect(Collectors.toList());
-//        } else {
-//            log.info("Запрос друзей несуществующего пользователя.");
-//            throw new WrongParameterException(String.format("Пользователь {} не найден", id));
-//        }
-//    }
-
-    public List<User> getAllUserFriends(Integer id) {
-        User user = this.findById(id);
-        if (user == null) {
-            String message = ("Пользователь не найден");
-            log.warn(message);
-            throw new WrongParameterException(message);
-        }
-        List<Integer> friendsId = user.getFiends();
-        List<User> friends = new ArrayList<>();
-        for (var friendId : friendsId) {
-            friends.add(this.findById(friendId));
-        }
-
-        return friends;
+    public List<User> getAllUserFriends (Integer id){
+        return userStorage.getFriendsId(id);
     }
 
-//    public List<User> getCommonFriends (Integer firstId, Integer otherId) { //должно так же работать
-//        if (userStorage.findById(firstId)!= null && userStorage.findById(otherId)!= null){
-//            log.info("Запрос общих друзей пользователей id " + firstId + " и id " +
-//                    otherId + ".");
-//            List<User> user = getAllUserFriends(firstId);
-//            List<User> otherUser = getAllUserFriends(otherId);
-//            return user.stream().filter(otherUser::contains).collect(Collectors.toList());
-//        } else {
-//            log.info("Запрос общих друзей несуществующего пользователя.");
-//            throw new WrongParameterException(String.format("Пользователь не найден"));
-//        }
-//    }
+    public List<User> getCommonFriends (Integer user_id, Integer friend_id) {
 
-    public List<User> getCommonFriends(Integer id1, Integer id2) {
-        User user1 = this.findById(id1);
-        User user2 = this.findById(id2);
-        if (user1 == null || user2 == null) {
-            String message = ("Пользователь не найден");
-            log.warn(message);
-            throw  new WrongParameterException(message);
-        }
-        List<Integer> friendsId1 = user1.getFiends();
-        List<Integer> friendsId2 = user2.getFiends();
-        friendsId1.retainAll(friendsId2);
-
-        List<User> friends = new ArrayList<>();
-        for (var friendId : friendsId1) {
-            friends.add(this.findById(friendId));
-        }
-
-        return friends;
+        List<User> user = getAllUserFriends(user_id);
+        List<User> otherUser = getAllUserFriends(friend_id);
+        return user.stream().filter(otherUser::contains).collect(Collectors.toList());
     }
 }

@@ -42,50 +42,12 @@ public class UserController {
         return userService.update(user);
     }
 
-//    @DeleteMapping
-//    public @Valid void delete(@Valid  @RequestBody User user) {
-//        log.info("Юзер удален: " + user);
-//        userService.deleteUser(user);
-//    }
-
     @GetMapping("{id}")
     public User getUserByID(@PathVariable Integer id) {
         log.info("Найден юзер по id: " + userService.findById(id));
         return userService.findById(id);
     }
 
-
-    //ДРУЗЬЯ!!!!!!!!!!!!
-
-//    @PutMapping("{id}/friends/{friendId}")
-//    public void addFriends(
-//            @PathVariable Integer id,
-//            @PathVariable Integer friendId) {
-//        log.info("Пользователи с id " + id + " и с id " + friendId + " стали друзьями");
-//        userService.addFriend(id, friendId);
-//    }
-//
-//    @DeleteMapping("{id}/friends/{friendId}")
-//    public void deleteFriends(
-//            @Positive @PathVariable Integer id,
-//            @Positive @PathVariable Integer friendId) {
-//        log.info("Пользователи с id " + id + " и с id " + friendId + " больше не друзья");
-//        userService.deleteFriend(id, friendId);
-//    }
-//
-//    @GetMapping("{id}/friends")
-//    public Collection<User> findAllFriends(
-//            @Positive @PathVariable Integer id) {
-//        log.info("Список друзей пользователя с id " + id);
-//        return userService.getAllUserFriends(id);
-//    }
-//
-//    @GetMapping("/{id}/friends/common/{otherId}")
-//    public List<User> commonFriends(@Positive @PathVariable Integer id,
-//                                    @Positive @PathVariable Integer otherId) {
-//        log.info("Получен список общих друзей у пользователей с id " + id + " и " + otherId);
-//        return userService.commonFriends(id, otherId);
-//    }
 
     @GetMapping("/{id}/friends")
     public List<User> getUserFriends(@PathVariable Integer id) {
@@ -95,7 +57,9 @@ public class UserController {
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Integer id,
                           @PathVariable Integer friendId) {
+        System.out.println("START addFriend in controller");
         userService.addFriend(id, friendId);
+        System.out.println("END addFriend in controller");
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
@@ -109,6 +73,5 @@ public class UserController {
                                              @PathVariable Integer otherId) {
         return userService.getCommonFriends(id, otherId);
     }
-
 }
 
