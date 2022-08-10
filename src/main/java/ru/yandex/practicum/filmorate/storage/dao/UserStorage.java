@@ -14,19 +14,25 @@ public interface UserStorage {
 
     List<User> findAll();
 
-    User create(User user);
+    User create(User user) throws ValidationException;
 
-    User update(User user);
+    User update(User user) throws ValidationException;
 
-    boolean containsEmail(String email);
+//    boolean containsEmail(String email);
 
-    void loadFriends(User user);
+//    void loadFriends(User user);
+//
+//    boolean containsFriendship(Integer filterId1, Integer filterId2, Boolean filterConfirmed);
+//
+//    void updateFriendship(Integer id1, Integer id2, boolean confirmed,  Integer filterId1, Integer filterId2);
+//
+//    void insertFriendship(Integer id, Integer friendId);
+//
+//    void removeFriendship(Integer filterId1, Integer filterId2);
 
-    boolean containsFriendship(Integer filterId1, Integer filterId2, Boolean filterConfirmed);
+    List<Integer> getFriendsIds(Integer id);
 
-    void updateFriendship(Integer id1, Integer id2, boolean confirmed,  Integer filterId1, Integer filterId2);
+    void addFriend(Integer user_id, Integer friend_id);
 
-    void insertFriendship(Integer id, Integer friendId);
-
-    void removeFriendship(Integer filterId1, Integer filterId2);
+    void deleteFriend(Integer user_id, Integer friend_id);
 }

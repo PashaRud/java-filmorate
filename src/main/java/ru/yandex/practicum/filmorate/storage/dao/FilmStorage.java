@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.storage.dao;
 
 import org.springframework.data.relational.core.sql.Like;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
@@ -8,11 +9,11 @@ import java.util.List;
 
 public interface FilmStorage {
 
-    Film create(Film film);
+    Film create(Film film) throws ValidationException;
 
-    Film update(Film film);
+    Film update(Film film) throws ValidationException;
 
-//    Film remove(Film film);
+    void remove(Film film) throws ValidationException;
 
 //    List<Integer> allFilmId();
 
@@ -20,11 +21,14 @@ public interface FilmStorage {
 
     Film getFilmById(Integer id);
 
-    void createGenre(Film film);
+    void createGenreByFilm(Film film) throws ValidationException;
 
-    void updateGenre(Film film);
-//
-//    void loadLikes(Film film);
-//
-//    void saveLikes(Film film);
+    void updateGenre(Film film) throws ValidationException;
+
+    void loadLikes(Film film);
+
+    void saveLikes(Film film);
+
+    void deleteLike(Integer filmId, Integer userId);
+
 }

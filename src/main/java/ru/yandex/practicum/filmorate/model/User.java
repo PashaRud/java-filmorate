@@ -1,9 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -12,11 +9,11 @@ import java.util.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class User {
 
-    private Map<User, Boolean> friendsStatus;
+//    private Map<User, Boolean> friendsStatus;
     private Integer id;
-    @NotNull(message = "не указан email")
     @NotBlank(message = "email не должен состоять из пробелов")
     @Email(message = "некорректный формат email-а")
     private String email;

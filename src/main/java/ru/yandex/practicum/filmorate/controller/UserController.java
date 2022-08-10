@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.WrongParameterException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -37,11 +36,11 @@ public class UserController {
     }
 
 
-//    @PutMapping
-//    public @Valid User update(@Valid  @RequestBody User user) throws WrongParameterException, ValidationException {
-//        log.info("Обновлен юзер: " + user);
-//        return userService.update(user);
-//    }
+    @PutMapping
+    public @Valid User update(@Valid  @RequestBody User user) throws ValidationException {
+        log.info("Обновлен юзер: " + user);
+        return userService.update(user);
+    }
 
 //    @DeleteMapping
 //    public @Valid void delete(@Valid  @RequestBody User user) {
@@ -50,39 +49,65 @@ public class UserController {
 //    }
 
     @GetMapping("{id}")
-    public User getUserByID(@PathVariable Integer id) throws WrongParameterException {
+    public User getUserByID(@PathVariable Integer id) {
         log.info("Найден юзер по id: " + userService.findById(id));
         return userService.findById(id);
     }
 
-    @PutMapping("{id}/friends/{friendId}")
-    public void addFriends(
-            @PathVariable Integer id,
-            @PathVariable Integer friendId) {
-        log.info("Пользователи с id " + id + " и с id " + friendId + " стали друзьями");
-        userService.addFriend(id, friendId);
-    }
 
-    @DeleteMapping("{id}/friends/{friendId}")
-    public void deleteFriends(
-            @Positive @PathVariable Integer id,
-            @Positive @PathVariable Integer friendId) {
-        log.info("Пользователи с id " + id + " и с id " + friendId + " больше не друзья");
-        userService.deleteFriend(id, friendId);
-    }
+    //ДРУЗЬЯ!!!!!!!!!!!!
 
-    @GetMapping("{id}/friends")
-    public Collection<User> findAllFriends(
-            @Positive @PathVariable Integer id) {
-        log.info("Список друзей пользователя с id " + id);
+//    @PutMapping("{id}/friends/{friendId}")
+//    public void addFriends(
+//            @PathVariable Integer id,
+//            @PathVariable Integer friendId) {
+//        log.info("Пользователи с id " + id + " и с id " + friendId + " стали друзьями");
+//        userService.addFriend(id, friendId);
+//    }
+//
+//    @DeleteMapping("{id}/friends/{friendId}")
+//    public void deleteFriends(
+//            @Positive @PathVariable Integer id,
+//            @Positive @PathVariable Integer friendId) {
+//        log.info("Пользователи с id " + id + " и с id " + friendId + " больше не друзья");
+//        userService.deleteFriend(id, friendId);
+//    }
+//
+//    @GetMapping("{id}/friends")
+//    public Collection<User> findAllFriends(
+//            @Positive @PathVariable Integer id) {
+//        log.info("Список друзей пользователя с id " + id);
+//        return userService.getAllUserFriends(id);
+//    }
+//
+//    @GetMapping("/{id}/friends/common/{otherId}")
+//    public List<User> commonFriends(@Positive @PathVariable Integer id,
+//                                    @Positive @PathVariable Integer otherId) {
+//        log.info("Получен список общих друзей у пользователей с id " + id + " и " + otherId);
+//        return userService.commonFriends(id, otherId);
+//    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> getUserFriends(@PathVariable Integer id) {
         return userService.getAllUserFriends(id);
     }
 
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable Integer id,
+                          @PathVariable Integer friendId) {
+        userService.addFriend(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriend(@PathVariable Integer id,
+                             @PathVariable Integer friendId) {
+        userService.deleteFriend(id, friendId);
+    }
+
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> commonFriends(@Positive @PathVariable Integer id,
-                                    @Positive @PathVariable Integer otherId) {
-        log.info("Получен список общих друзей у пользователей с id " + id + " и " + otherId);
-        return userService.commonFriends(id, otherId);
+    public Collection<User> getCommonFriends(@PathVariable Integer id,
+                                             @PathVariable Integer otherId) {
+        return userService.getCommonFriends(id, otherId);
     }
 
 }

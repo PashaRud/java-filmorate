@@ -14,7 +14,7 @@ import java.util.Collection;
 
 @RestController
 @Slf4j
-@Validated
+//@Validated
 @RequestMapping("/genres")
 public class GenreController {
     private GenreDbStorage genreDbStorage;

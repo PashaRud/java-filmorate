@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 
 import java.util.List;
 
-public interface MpaDAO {
+public interface MpaDao {
     Mpa findById(int id);
 
     List<Mpa> findAll();

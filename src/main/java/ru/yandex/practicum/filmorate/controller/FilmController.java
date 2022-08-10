@@ -28,56 +28,56 @@ public class FilmController {
 
     @GetMapping
     public Collection<Film> findAll() {
-        log.info("Текущее количество фильмов: ", + filmService.getAll().size());
-        return filmService.getAll();
+        log.info("Текущее количество фильмов: ", + filmService.findAll().size());
+        return filmService.findAll();
     }
 
     @PostMapping
     public @Valid Film create(@Valid @RequestBody Film film) throws WrongParameterException, ValidationException {
         log.info("Добавлен фильм: " + film);
-//        return filmService.create(film);
-        return null;
+        return filmService.create(film);
+//        return null;
     }
 
     @PutMapping
     public @Valid Film update(@Valid @RequestBody Film film) throws WrongParameterException, ValidationException {
         log.info("Обновлен фильм: " + film);
-//        return filmService.update(film);
-        return null;
+        return filmService.update(film);
+//        return null;
     }
 
-    @DeleteMapping
-    public @Valid void delete(@Valid @RequestBody Film film) throws WrongParameterException {
-        log.info("Фильм удален: " + film);
+//    @DeleteMapping
+//    public @Valid void delete(@Valid @RequestBody Film film) throws WrongParameterException {
+//        log.info("Фильм удален: " + film);
 //        filmService.deleteFilm(film);
-    }
+//    }
 
     @GetMapping("{id}")
     public Film getFilmById(@PathVariable Integer id) throws WrongParameterException {
-//        log.info("Найден фильм по id: " + filmService.findFilmById(id));
-//        return filmService.findFilmById(id);
-        return null;
+        log.info("Найден фильм по id: " + filmService.findById(id));
+        return filmService.findById(id);
+//        return null;
     }
 
     @PutMapping("{id}/like/{userId}")
     public void addLike(@PathVariable Integer id,
                         @PathVariable Integer userId) {
         log.info("Фильму с id " + id + " поставлен лайк пользователем с id " + userId);
-//        filmService.addLike(id, userId);
+        filmService.addLike(id, userId);
     }
 
     @DeleteMapping("{id}/like/{userId}")
     public void deleteLike(@PathVariable Integer id,
                            @PathVariable Integer userId) {
         log.info("Фильму с id " + id + " удален лайк пользователем с id " + userId);
-//        filmService.deleteLike(id, userId);
+        filmService.removeLike(id, userId);
     }
 
     @GetMapping("/popular")
     public Collection<Film> getMostPopularFilms(
             @RequestParam(defaultValue = "10") Integer count) {
         log.info("Список наиболее популярных фильмов в количестве " + count);
-//        return filmService.getPopularFilms(count);
-        return null;
+        return filmService.findPopularMovies(count);
+//        return null;
     }
 }

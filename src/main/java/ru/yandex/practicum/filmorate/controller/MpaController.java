@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.dao.MpaDAO;
+import ru.yandex.practicum.filmorate.storage.dao.MpaDao;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -14,10 +14,10 @@ import java.util.List;
 @RequestMapping("/mpa")
 public class MpaController {
 
-    private final MpaDAO mpa;
+    private final MpaDao mpa;
 
     @Autowired
-    public MpaController(MpaDAO mpa) {
+    public MpaController(MpaDao mpa) {
         this.mpa = mpa;
     }
 

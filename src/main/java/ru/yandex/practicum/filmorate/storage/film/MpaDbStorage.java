@@ -4,8 +4,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.WrongParameterException;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.dao.MpaDAO;
+import ru.yandex.practicum.filmorate.storage.dao.MpaDao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,7 +16,7 @@ import java.util.List;
 
 @Component
 @Primary
-public class MpaDbStorage implements MpaDAO {
+public class MpaDbStorage implements MpaDao {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -24,6 +26,9 @@ public class MpaDbStorage implements MpaDAO {
 
     @Override
     public Mpa findById(int id) {
+        if(id == 0 || id < 0) {
+            throw new WrongParameterException("Некорректный id MPA");
+        }
         String sql = "SELECT * FROM RATINGS WHERE RATING_ID = ?";
         List<Mpa> result = jdbcTemplate.query(sql, this::mapToRating, id);
         if (result.isEmpty()) {
