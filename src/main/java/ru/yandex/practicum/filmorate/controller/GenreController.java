@@ -14,10 +14,9 @@ import java.util.Collection;
 
 @RestController
 @Slf4j
-//@Validated
 @RequestMapping("/genres")
 public class GenreController {
-    private GenreDbStorage genreDbStorage;
+    private final GenreDbStorage genreDbStorage;
 
     @Autowired
     public GenreController(GenreDbStorage genreDbStorage) {

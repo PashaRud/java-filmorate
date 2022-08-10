@@ -4,20 +4,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.WrongParameterException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.Validator;
-import ru.yandex.practicum.filmorate.storage.dao.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.dao.FilmDao;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -28,7 +23,7 @@ import java.util.Set;
 @Component
 @Slf4j
 @Primary
-public class FilmDbStorage implements FilmStorage {
+public class FilmDbStorage implements FilmDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final Validator validator;
@@ -87,25 +82,6 @@ public class FilmDbStorage implements FilmStorage {
         return film;
     }
 
-//    @Override
-//    public Film create(Film film) throws ValidationException {
-//        validator.filmValidator(film);
-//        KeyHolder keyHolder = new GeneratedKeyHolder();
-//        final String sql = "INSERT INTO FILMS(FILM_NAME, DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) " +
-//                "values (?, ?, ?, ?, ?)";
-//        jdbcTemplate.update(connection -> {
-//            PreparedStatement stmt = connection.prepareStatement(sql, new String[]{"film_id"});
-//            stmt.setString(1, film.getName());
-//            stmt.setString(2, film.getDescription());
-//            stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
-//            stmt.setLong(4, film.getDuration());
-//            stmt.setInt(5, film.getMpa().getId());
-//            return stmt;
-//        }, keyHolder);
-//        film.setId(keyHolder.getKey().intValue());
-//        return film;
-//    }
-
     @Override
     public Film update(Film film) {
         if(film.getId() <= 0) {
@@ -119,20 +95,6 @@ public class FilmDbStorage implements FilmStorage {
 
         return film;
     }
-
-    @Override
-    public void remove(Film film) throws ValidationException {
-//        testId(id);
-        validator.filmValidator(film);
-        String sql = "DELETE FROM FILMS WHERE FILM_ID = ?";
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet(sql, film.getId());
-        if (userRows.next()) {
-            jdbcTemplate.update(sql, film.getId());
-        } else {
-            throw new WrongParameterException("Такого фильма не существует");
-        }
-    }
-
 
     @Override
     public void saveLikes(Film film) {
@@ -152,12 +114,6 @@ public class FilmDbStorage implements FilmStorage {
         while (sqlRowSet.next()) {
             film.addLike(sqlRowSet.getInt("USER_ID"));
         }
-    }
-
-    @Override
-    public void deleteLike(Integer filmId, Integer userId) {
-        String sql = "DELETE  FROM FILMS_LIKES WHERE FILM_ID = ? AND USER_ID = ?";
-        jdbcTemplate.update(sql, filmId, userId);
     }
 
     @Override

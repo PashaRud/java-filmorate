@@ -6,12 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.WrongParameterException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.dao.UserStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
-import java.lang.invoke.WrongMethodTypeException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -37,17 +33,19 @@ public class UserService {
     }
 
     public User update(User user) throws ValidationException {
+        log.info("Пользователь обновлен {}", user);
         return userStorage.update(user);
     }
 
     public List<User> findAll() {
         List<User> users = userStorage.findAll();
+        log.info("Все пользователи");
         return users;
     }
 
     public User findById(Integer id) {
         User user = userStorage.findById(id);
-//        userStorage.loadFriends(user);
+        log.info("Поиск пользователя по id {}", user);
         return user;
     }
 
@@ -56,20 +54,22 @@ public class UserService {
                 || (userStorage.findAll().stream().noneMatch(u -> Objects.equals(u.getId(), friendId)))) {
             throw new WrongParameterException("user.id или friend.id не найден");
         }
+        log.info("Добавлен друг с id {}", friendId);
         userStorage.addFriend(userId, friendId);
     }
 
     public void deleteFriend(Integer userId, Integer friendId){
+        log.info("Удален друг с id {}", friendId);
         userStorage.deleteFriend(userId, friendId);
     }
 
 
     public List<User> getAllUserFriends (Integer id){
+        log.info("Все друзья пользователя с id {}", id);
         return userStorage.getFriendsId(id);
     }
 
     public List<User> getCommonFriends (Integer user_id, Integer friend_id) {
-
         List<User> user = getAllUserFriends(user_id);
         List<User> otherUser = getAllUserFriends(friend_id);
         return user.stream().filter(otherUser::contains).collect(Collectors.toList());

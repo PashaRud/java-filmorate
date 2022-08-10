@@ -6,25 +6,23 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.WrongParameterException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.Validator;
-import ru.yandex.practicum.filmorate.storage.dao.UserStorage;
+import ru.yandex.practicum.filmorate.storage.dao.UserDao;
 
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Component
 @Primary
 @Slf4j
-public class UserDbStorage implements UserStorage {
+public class UserDbStorage implements UserDao {
     private final JdbcTemplate jdbcTemplate;
     private final Validator validator;
 
@@ -56,9 +54,6 @@ public class UserDbStorage implements UserStorage {
         }
         return result.get(0);
     }
-
-
-
 
     @Override
     public List<User> findAll() {

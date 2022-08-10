@@ -18,8 +18,7 @@ import java.util.*;
 @RequestMapping("/films")
 public class FilmController {
 
-    private FilmService filmService;
-
+    private final FilmService filmService;
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -43,20 +42,12 @@ public class FilmController {
     public @Valid Film update(@Valid @RequestBody Film film) throws WrongParameterException, ValidationException {
         log.info("Обновлен фильм: " + film);
         return filmService.update(film);
-//        return null;
     }
-
-//    @DeleteMapping
-//    public @Valid void delete(@Valid @RequestBody Film film) throws WrongParameterException {
-//        log.info("Фильм удален: " + film);
-//        filmService.deleteFilm(film);
-//    }
 
     @GetMapping("{id}")
     public Film getFilmById(@PathVariable Integer id) throws WrongParameterException {
         log.info("Найден фильм по id: " + filmService.findById(id));
         return filmService.findById(id);
-//        return null;
     }
 
     @PutMapping("{id}/like/{userId}")
@@ -78,6 +69,5 @@ public class FilmController {
             @RequestParam(defaultValue = "10") Integer count) {
         log.info("Список наиболее популярных фильмов в количестве " + count);
         return filmService.findPopularMovies(count);
-//        return null;
     }
 }
