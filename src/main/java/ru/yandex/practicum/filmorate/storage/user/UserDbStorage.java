@@ -18,7 +18,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 
 @Component
@@ -56,8 +55,6 @@ public class UserDbStorage implements UserStorage {
         }
         return result.get(0);
     }
-
-
 
     public void loadFriends(User user) {
         String sql = "(SELECT USER_ID2 ID FROM FRIENDSHIP  WHERE USER_ID1 = ?) " +

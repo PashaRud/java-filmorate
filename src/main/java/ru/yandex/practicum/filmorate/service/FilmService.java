@@ -54,8 +54,9 @@ public class FilmService {
 
 //    @Override
     public Film update(Film film) throws ValidationException {
-        film = filmStorage.update(film);
         filmStorage.updateGenre(film);
+        film = filmStorage.update(film);
+
         log.info("Обновлён фильм {}", film);
         return film;
     }
@@ -75,7 +76,7 @@ public class FilmService {
     }
 
     private void loadData(Film film) {
-        film.setGenre(genreDao.getGenresByFilm(film));
+        film.setGenres(genreDao.getGenresByFilm(film));
         filmStorage.loadLikes(film);
     }
 

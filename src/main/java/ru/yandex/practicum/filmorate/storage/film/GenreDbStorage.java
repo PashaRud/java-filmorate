@@ -49,19 +49,6 @@ public class GenreDbStorage implements GenreDao {
         return genres;
     }
 
-//    @Override
-//    public Genre create(Genre genre) {
-//        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-//                .withTableName("GENRES")
-//                .usingGeneratedKeyColumns("GENRE_ID");
-//
-//        Map<String, Object> values = new HashMap<>();
-//        values.put("NAME", genre.getName());
-//
-//        genre.setId(simpleJdbcInsert.executeAndReturnKey(values).intValue());
-//        return genre;
-//    }
-
     @Override
     public Genre create(Genre genre) {
         String sql = "SELECT * FROM GENRES WHERE RATING_ID = ?";
@@ -70,16 +57,6 @@ public class GenreDbStorage implements GenreDao {
         return create.get(0);
     }
 
-//    @Override
-//    public Genre update(Genre genre) {
-//        if (genre.getId() == null) {
-//            return null;
-//        }
-//        String sql = "UPDATE GENRES SET NAME = ? WHERE GENRE_ID = ?";
-////        jdbcTemplate.update(sql, genre.setGenreName(), genre.getId());
-//        jdbcTemplate.update(sql, genre.setGenreName(), genre.getId());
-//        return genre;
-//    }
 
     @Override
     public Genre update(Genre genre) {

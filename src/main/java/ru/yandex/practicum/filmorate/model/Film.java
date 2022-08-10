@@ -15,7 +15,7 @@ import java.util.Set;
 @EqualsAndHashCode(of = "id")
 public class Film {
     private  Set<Integer> likes = new HashSet<>();
-    private Set<Genre> genre;
+    private Set<Genre> genres;
     private Integer id;
 //    @NotNull(message = "Название должно быть не пустым")
 //    @NotBlank(message = "Название должно быть не пустым")
@@ -42,7 +42,7 @@ public class Film {
         this.releaseDate = releaseDate;
         this.duration = duration;
 //        this.likes = new HashSet<>();
-        this.genre = new HashSet<>();
+        this.genres = new HashSet<>();
     }
 
     public void addLike(Integer userId) {

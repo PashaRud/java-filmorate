@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.WrongParameterException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.dao.MpaDao;
 
@@ -47,7 +46,6 @@ public class MpaDbStorage implements MpaDao {
     @Override
     public List<Mpa> findAll() {
         String sql = "SELECT * FROM RATINGS ORDER BY RATING_ID";
-//        return jdbcTemplate.query(sql, (rs, rowNum) -> mapToRating(rs, rowNum));
         return jdbcTemplate.query(sql, this::mapToRating);
     }
 

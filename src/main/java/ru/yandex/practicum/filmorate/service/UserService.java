@@ -34,13 +34,11 @@ public class UserService {
     }
 
     public User update(User user) throws ValidationException {
-//        validationBeforeUpdate(data);
         return userStorage.update(user);
     }
 
     public List<User> findAll() {
         List<User> users = userStorage.findAll();
-//        users.forEach(userStorage::loadFriends);
         return users;
     }
 
