@@ -18,8 +18,4 @@ public interface FilmDao {
     void createGenreByFilm(Film film) throws ValidationException;
 
     void updateGenre(Film film) throws ValidationException;
-
-    void loadLikes(Film film);
-
-    void saveLikes(Film film);
 }

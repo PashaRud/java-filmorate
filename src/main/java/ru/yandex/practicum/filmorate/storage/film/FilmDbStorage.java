@@ -1,11 +1,11 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.exception.WrongParameterException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -21,17 +21,12 @@ import java.util.Map;
 import java.util.Set;
 
 @Component
-@Slf4j
 @Primary
+@RequiredArgsConstructor
 public class FilmDbStorage implements FilmDao {
 
     private final JdbcTemplate jdbcTemplate;
     private final Validator validator;
-
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, Validator validator) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.validator = validator;
-    }
 
     private Film mapToFilm(ResultSet resultSet, int rowNum) throws SQLException {
         Film film = new Film();
@@ -41,6 +36,39 @@ public class FilmDbStorage implements FilmDao {
         film.setReleaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate());
         film.setDuration(resultSet.getInt("DURATION"));
         film.setMpa(new Mpa(resultSet.getInt("RATING_ID"), resultSet.getString("R_NAME")));
+        return film;
+    }
+
+    @Override
+    public Film create(Film film) throws ValidationException {
+        validator.filmValidator(film);
+        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                .withTableName("FILMS")
+                .usingGeneratedKeyColumns("FILM_ID");
+
+        Map<String, Object> values = new HashMap<>();
+        values.put("NAME", film.getName());
+        values.put("DESCRIPTION", film.getDescription());
+        values.put("RELEASE_DATE", film.getReleaseDate());
+        values.put("DURATION", film.getDuration());
+        values.put("RATING_ID", film.getMpa().getId());
+
+        film.setId(simpleJdbcInsert.executeAndReturnKey(values).intValue());
+        return film;
+    }
+
+    @Override
+    public Film update(Film film) throws ValidationException {
+        if(film.getId() <= 0) {
+            throw new WrongParameterException("Некорретный id");
+        }
+        validator.filmValidator(film);
+        String sql =
+                "UPDATE FILMS SET NAME= ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, RATING_ID = ? " +
+                        "WHERE FILM_ID = ?";
+        jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
+                film.getMpa().getId(), film.getId());
+
         return film;
     }
 
@@ -63,57 +91,6 @@ public class FilmDbStorage implements FilmDao {
             throw new WrongParameterException("Такого фильма не существует");
         }
         return result.get(0);
-    }
-
-    @Override
-    public Film create(Film film) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                .withTableName("FILMS")
-                .usingGeneratedKeyColumns("FILM_ID");
-
-        Map<String, Object> values = new HashMap<>();
-        values.put("NAME", film.getName());
-        values.put("DESCRIPTION", film.getDescription());
-        values.put("RELEASE_DATE", film.getReleaseDate());
-        values.put("DURATION", film.getDuration());
-        values.put("RATING_ID", film.getMpa().getId());
-
-        film.setId(simpleJdbcInsert.executeAndReturnKey(values).intValue());
-        return film;
-    }
-
-    @Override
-    public Film update(Film film) {
-        if(film.getId() <= 0) {
-            throw new WrongParameterException("Некорретный id");
-        }
-        String sql =
-                "UPDATE FILMS SET NAME= ?, DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, RATING_ID = ? " +
-                        "WHERE FILM_ID = ?";
-        jdbcTemplate.update(sql, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(),
-                film.getMpa().getId(), film.getId());
-
-        return film;
-    }
-
-    @Override
-    public void saveLikes(Film film) {
-        jdbcTemplate.update("DELETE FROM FILMS_LIKES WHERE FILM_ID = ?", film.getId());
-
-        String sql = "INSERT INTO FILMS_LIKES (FILM_ID, USER_ID) VALUES(?, ?)";
-        Set<Integer> likes = film.getLikes();
-        for (var like : likes ) {
-            jdbcTemplate.update(sql, film.getId(), like);
-        }
-    }
-
-    @Override
-    public void loadLikes(Film film) {
-        String sql = "SELECT USER_ID FROM FILMS_LIKES WHERE FILM_ID = ?";
-        SqlRowSet sqlRowSet = jdbcTemplate.queryForRowSet(sql, film.getId());
-        while (sqlRowSet.next()) {
-            film.addLike(sqlRowSet.getInt("USER_ID"));
-        }
     }
 
     @Override

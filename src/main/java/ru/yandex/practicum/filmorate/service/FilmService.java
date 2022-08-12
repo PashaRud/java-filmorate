@@ -1,13 +1,14 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.dao.FilmDao;
 import ru.yandex.practicum.filmorate.storage.dao.GenreDao;
+import ru.yandex.practicum.filmorate.storage.dao.LikeDao;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,20 +16,14 @@ import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class FilmService {
 
-    private FilmDao filmStorage;
-    private UserService userService;
-    private GenreDao genreDao;
+    private final FilmDao filmStorage;
+    private final GenreDao genreDao;
 
-    @Autowired
-    public FilmService(FilmDao filmStorage,
-                       UserService userService,
-                       GenreDao genreDao) {
-        this.filmStorage = filmStorage;
-        this.userService = userService;
-        this.genreDao = genreDao;
-    }
+    private final LikeDao likeDao;
+    private final UserService userService;
 
     public Film create(Film film) throws ValidationException  {
         film = filmStorage.create(film);
@@ -60,14 +55,14 @@ public class FilmService {
 
     private void loadData(Film film) {
         film.setGenres(genreDao.getGenresByFilm(film));
-        filmStorage.loadLikes(film);
+        likeDao.loadLikes(film);
     }
 
     public void addLike(Integer id, Integer userId) {
         Film film = this.findById(id);
         User user = userService.findById(userId);
         film.addLike(userId);
-        filmStorage.saveLikes(film);
+        likeDao.saveLikes(film);
         log.info("Добавлен лайк");
     }
 
@@ -75,7 +70,7 @@ public class FilmService {
         Film film = this.findById(id);
         User user = userService.findById(userId);
         film.removeLike(userId);
-        filmStorage.saveLikes(film);
+        likeDao.saveLikes(film);
         log.info("Удален лайк");
     }
 

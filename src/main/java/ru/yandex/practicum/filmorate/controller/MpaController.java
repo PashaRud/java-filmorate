@@ -23,21 +23,25 @@ public class MpaController {
 
     @GetMapping("/{id}")
     public Mpa findById(@PathVariable int id) {
+        log.info("Поиск рейтинга по id - {}" + id);
         return mpa.findById(id);
     }
 
     @GetMapping
     public List<Mpa> findAll() {
+        log.info("Все рейтинги");
         return mpa.findAll();
     }
 
     @PostMapping
     public Mpa create(@Valid @RequestBody Mpa data) {
+        log.info("Создание рейтинга");
         return mpa.create(data);
     }
 
     @PutMapping
     public Mpa update(@Valid @RequestBody Mpa data) {
+        log.info("Обновление рейтинга");
         return mpa.update(data);
     }
 

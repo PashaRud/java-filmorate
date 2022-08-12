@@ -35,7 +35,6 @@ public class FilmController {
     public @Valid Film create(@Valid @RequestBody Film film) throws WrongParameterException, ValidationException {
         log.info("Добавлен фильм: " + film);
         return filmService.create(film);
-//        return null;
     }
 
     @PutMapping

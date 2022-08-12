@@ -49,26 +49,28 @@ public class UserController {
 
     @GetMapping("/{id}/friends")
     public List<User> getUserFriends(@PathVariable Integer id) {
+        log.info("Найден друзья юзера с id: " + id);
         return userService.getAllUserFriends(id);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     public void addFriend(@PathVariable Integer id,
                           @PathVariable Integer friendId) {
-        System.out.println("START addFriend in controller");
         userService.addFriend(id, friendId);
-        System.out.println("END addFriend in controller");
+        log.info("Добавление друга. id {}, id друга {} " + id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     public void deleteFriend(@PathVariable Integer id,
                              @PathVariable Integer friendId) {
         userService.deleteFriend(id, friendId);
+        log.info("Удаление друга. id {}, id друга {} " + id, friendId);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public Collection<User> getCommonFriends(@PathVariable Integer id,
                                              @PathVariable Integer otherId) {
+        log.info("Общие друзья. id {}, id друга {} " + id, otherId);
         return userService.getCommonFriends(id, otherId);
     }
 }

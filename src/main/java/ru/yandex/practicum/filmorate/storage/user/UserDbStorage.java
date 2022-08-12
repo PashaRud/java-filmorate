@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -21,16 +20,10 @@ import java.util.*;
 
 @Component
 @Primary
-@Slf4j
+@RequiredArgsConstructor
 public class UserDbStorage implements UserDao {
     private final JdbcTemplate jdbcTemplate;
     private final Validator validator;
-
-    @Autowired
-    public UserDbStorage(JdbcTemplate jdbcTemplate, Validator validator) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.validator = validator;
-    }
 
     private User mapToUser(ResultSet resultSet, int rowNum) throws SQLException {
         User user = new User();
@@ -40,25 +33,6 @@ public class UserDbStorage implements UserDao {
         user.setName(resultSet.getString("NAME"));
         user.setBirthday(resultSet.getDate("BIRTHDAY").toLocalDate());
         return user;
-    }
-
-    @Override
-    public User findById(Integer id) {
-        if(id <= 0) {
-            throw new WrongParameterException("Неверный id");
-        }
-        String sql = "SELECT * FROM USERS WHERE USER_ID = ?";
-        List<User> result = jdbcTemplate.query(sql, this::mapToUser, id);
-        if (result.isEmpty()) {
-            return null;
-        }
-        return result.get(0);
-    }
-
-    @Override
-    public List<User> findAll() {
-        String sql = "SELECT * FROM USERS ORDER BY USER_ID";
-        return jdbcTemplate.query(sql, this::mapToUser);
     }
 
     @Override
@@ -91,33 +65,24 @@ public class UserDbStorage implements UserDao {
         return user;
     }
 
-    private void testId(Integer id) {
-        if (id < 0 || id == null) {
-            throw new WrongParameterException("Юзера с id " + id + " нет в БД.");
+    @Override
+    public User findById(Integer id) {
+        if(id <= 0) {
+            throw new WrongParameterException("Неверный id");
         }
-    }
-
-    @Override
-    public List<User> getFriendsId(Integer id) {
-        List<Integer> friendIds = jdbcTemplate.queryForList("SELECT friend_id FROM friendship WHERE user_id = ?",
-                Integer.class, id);
-        List<User> list = new ArrayList<>();
-        for (Integer friendId : friendIds) {
-            User userById = findById(friendId);
-            list.add(userById);
+        String sql = "SELECT * FROM USERS WHERE USER_ID = ?";
+        List<User> result = jdbcTemplate.query(sql, this::mapToUser, id);
+        if (result.isEmpty()) {
+            return null;
         }
-        return list;
+        return result.get(0);
     }
 
     @Override
-    public void addFriend(Integer id, Integer friendId) {
-        String sqlQuery = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?)";
-        jdbcTemplate.update(sqlQuery, id, friendId);
+    public List<User> findAll() {
+        String sql = "SELECT * FROM USERS ORDER BY USER_ID";
+        return jdbcTemplate.query(sql, this::mapToUser);
     }
 
-    @Override
-    public void deleteFriend(Integer user_id, Integer friend_id) {
-        final String sql = "DELETE FROM FRIENDSHIP WHERE USER_ID = ? AND friend_id = ?";
-        jdbcTemplate.update(sql, user_id, friend_id);
-    }
+
     }
