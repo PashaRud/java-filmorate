@@ -67,6 +67,6 @@ public class FilmController {
     public Collection<Film> getMostPopularFilms(
             @RequestParam(defaultValue = "10") Integer count) {
         log.info("Список наиболее популярных фильмов в количестве " + count);
-        return filmService.findPopularMovies(count);
+        return filmService.findPopularFilms(count);
     }
 }

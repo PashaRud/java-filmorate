@@ -15,6 +15,8 @@ public interface FilmDao {
 
     Film getFilmById(Integer id);
 
+    List<Film> findPopularFilms(Integer count);
+
     void createGenreByFilm(Film film) throws ValidationException;
 
     void updateGenre(Film film) throws ValidationException;
