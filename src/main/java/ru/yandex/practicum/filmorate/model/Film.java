@@ -14,6 +14,7 @@ import java.util.Set;
 @Builder
 @EqualsAndHashCode(of = "id")
 public class Film {
+
     private  Set<Integer> likes = new HashSet<>();
     private Set<Genre> genres;
     private Integer id;
@@ -22,20 +23,4 @@ public class Film {
     private LocalDate releaseDate;
     private Integer duration;
     private Mpa mpa;
-
-    public void addLike(Integer userId) {
-        likes.add(userId);
-    }
-
-    public void removeLike(Integer userId) {
-        likes.remove(userId);
-    }
-
-    public int getLikesCount() {
-        return likes.size();
-    }
-
-    public Set<Integer> getLikes() {
-        return new HashSet<>(likes);
-    }
 }
